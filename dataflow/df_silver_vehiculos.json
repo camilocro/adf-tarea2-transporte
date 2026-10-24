@@ -1,0 +1,49 @@
+{
+	"name": "df_silver_vehiculos",
+	"properties": {
+		"folder": {
+			"name": "Silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dw_bronze_vehiculos_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sql"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "limpiarTextos"
+				},
+				{
+					"name": "convertirNumeros"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          AnioFuente as string,",
+				"          VehiculoId as string,",
+				"          Placa as string,",
+				"          TipoVehiculo as string,",
+				"          CapacidadEfectiva as string,",
+				"          VigenciaDesde as string,",
+				"          VigenciaHasta as string,",
+				"          Estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sql",
+				"sql derive(Placa = coalesce(upper(trim(Placa)), 'SIN DATO'),",
+				"          TipoVehiculo = coalesce(upper(trim(TipoVehiculo)), 'SIN DATO'),",
+				"          Estado = coalesce(upper(trim(Estado)), 'SIN DATO')) ~> limpiarTextos",
+				"limpiarTextos derive(CapacidadEfectiva = toInteger(toDouble(replace(trim(CapacidadEfectiva), ',', '.')))) ~> convertirNumeros"
+			]
+		}
+	}
+}

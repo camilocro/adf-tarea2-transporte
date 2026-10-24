@@ -11,6 +11,7 @@
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
+			"sheetName": "Incidentes",
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "operacion_2023.xlsx",

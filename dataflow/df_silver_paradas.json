@@ -1,0 +1,112 @@
+{
+	"name": "df_silver_paradas",
+	"properties": {
+		"folder": {
+			"name": "Silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dw_bronze_paradas_sql",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dw_silver_paradas_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarTextos"
+				},
+				{
+					"name": "convertirDecimales"
+				},
+				{
+					"name": "convertirFechas"
+				},
+				{
+					"name": "equivalenciaParada"
+				},
+				{
+					"name": "quitarDuplicados"
+				},
+				{
+					"name": "soloValidos"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          AnioFuente as string,",
+				"          ParadaHistoricaId as string,",
+				"          CodigoPublicado as string,",
+				"          NombreParada as string,",
+				"          Zona as string,",
+				"          Latitud as string,",
+				"          Longitud as string,",
+				"          VigenciaDesde as string,",
+				"          VigenciaHasta as string,",
+				"          Estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(CodigoPublicado = iif(trim(coalesce(CodigoPublicado, '')) == '', upper(trim(ParadaHistoricaId)), upper(trim(CodigoPublicado))),",
+				"          NombreParada = coalesce(trim(NombreParada), 'SIN DATO'),",
+				"          Zona = coalesce(upper(trim(Zona)), 'SIN DATO'),",
+				"          Estado = coalesce(upper(trim(Estado)), 'SIN DATO')) ~> limpiarTextos",
+				"limpiarTextos derive(Latitud = toDecimal(replace(trim(Latitud), ',', '.'), 9, 6),",
+				"          Longitud = toDecimal(replace(trim(Longitud), ',', '.'), 9, 6)) ~> convertirDecimales",
+				"convertirDecimales derive(VigenciaDesde = case(regexMatch(trim(VigenciaDesde), '^[0-9]{4}-[0-9]{2}-[0-9]{2}.*'), toDate(left(trim(VigenciaDesde), 10), 'yyyy-MM-dd'), regexMatch(trim(VigenciaDesde), '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'), toDate(trim(VigenciaDesde), 'dd/MM/yyyy'), regexMatch(trim(VigenciaDesde), '^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4} .*'), toDate(split(trim(VigenciaDesde), ' ')[1], 'M/d/yyyy'), regexMatch(trim(VigenciaDesde), '^[0-9]{5}([.]0+)?$'), addDays(toDate('1899-12-30'), toInteger(toDouble(trim(VigenciaDesde))))),",
+				"          VigenciaHasta = case(regexMatch(trim(VigenciaHasta), '^[0-9]{4}-[0-9]{2}-[0-9]{2}.*'), toDate(left(trim(VigenciaHasta), 10), 'yyyy-MM-dd'), regexMatch(trim(VigenciaHasta), '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'), toDate(trim(VigenciaHasta), 'dd/MM/yyyy'), regexMatch(trim(VigenciaHasta), '^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4} .*'), toDate(split(trim(VigenciaHasta), ' ')[1], 'M/d/yyyy'), regexMatch(trim(VigenciaHasta), '^[0-9]{5}([.]0+)?$'), addDays(toDate('1899-12-30'), toInteger(toDouble(trim(VigenciaHasta)))))) ~> convertirFechas",
+				"convertirFechas derive(ParadaHistoricaId = iif(upper(trim(ParadaHistoricaId)) == 'MC-01', iif(VigenciaDesde >= toDate('2023-07-01'), 'P220-MC-NEW', 'P220-MC-OLD'), upper(trim(ParadaHistoricaId)))) ~> equivalenciaParada",
+				"equivalenciaParada window(over(ParadaHistoricaId),",
+				"     desc(VigenciaDesde, true),",
+				"     NumFila = rowNumber()) ~> quitarDuplicados",
+				"quitarDuplicados filter(NumFila == 1 && !isNull(ParadaHistoricaId) && !isNull(Latitud) && !isNull(Longitud) && !isNull(VigenciaDesde) && !isNull(VigenciaHasta)) ~> soloValidos",
+				"soloValidos sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ParadaHistoricaId as string,",
+				"          CodigoPublicado as string,",
+				"          NombreParada as string,",
+				"          Zona as string,",
+				"          Latitud as decimal(9,6),",
+				"          Longitud as decimal(9,6),",
+				"          VigenciaDesde as date,",
+				"          VigenciaHasta as date,",
+				"          Estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ParadaHistoricaId,",
+				"          CodigoPublicado,",
+				"          NombreParada,",
+				"          Zona,",
+				"          Latitud,",
+				"          Longitud,",
+				"          VigenciaDesde,",
+				"          VigenciaHasta,",
+				"          Estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

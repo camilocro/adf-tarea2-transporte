@@ -17,49 +17,48 @@
 				"precision": 5
 			},
 			{
+				"name": "DemandaId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FechaServicio",
+				"type": "date"
+			},
+			{
+				"name": "RutaHistoricaId",
+				"type": "nvarchar"
+			},
+			{
 				"name": "ParadaHistoricaId",
 				"type": "nvarchar"
 			},
 			{
-				"name": "CodigoPublicado",
+				"name": "Franja",
 				"type": "nvarchar"
 			},
 			{
-				"name": "NombreParada",
-				"type": "nvarchar"
+				"name": "ValidacionesTarjeta",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "Zona",
-				"type": "nvarchar"
+				"name": "Descensos",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "Latitud",
-				"type": "decimal",
-				"precision": 9,
-				"scale": 6
+				"name": "DemandaNoAtendida",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "Longitud",
-				"type": "decimal",
-				"precision": 9,
-				"scale": 6
-			},
-			{
-				"name": "VigenciaDesde",
-				"type": "date"
-			},
-			{
-				"name": "VigenciaHasta",
-				"type": "date"
-			},
-			{
-				"name": "Estado",
+				"name": "Metodo",
 				"type": "nvarchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "ParadasAzure"
+			"table": "DemandaParadasAzure"
 		}
 	}
 }

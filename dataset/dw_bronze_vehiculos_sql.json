@@ -10,7 +10,40 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "AnioFuente",
+				"type": "varchar"
+			},
+			{
+				"name": "VehiculoId",
+				"type": "varchar"
+			},
+			{
+				"name": "Placa",
+				"type": "varchar"
+			},
+			{
+				"name": "TipoVehiculo",
+				"type": "varchar"
+			},
+			{
+				"name": "CapacidadEfectiva",
+				"type": "varchar"
+			},
+			{
+				"name": "VigenciaDesde",
+				"type": "varchar"
+			},
+			{
+				"name": "VigenciaHasta",
+				"type": "varchar"
+			},
+			{
+				"name": "Estado",
+				"type": "varchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "bronze",
 			"table": "Vehiculos"

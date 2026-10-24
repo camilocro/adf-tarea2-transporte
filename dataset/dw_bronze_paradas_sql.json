@@ -16,19 +16,27 @@
 				"type": "varchar"
 			},
 			{
-				"name": "VehiculoId",
+				"name": "ParadaHistoricaId",
 				"type": "varchar"
 			},
 			{
-				"name": "Placa",
+				"name": "CodigoPublicado",
 				"type": "varchar"
 			},
 			{
-				"name": "TipoVehiculo",
+				"name": "NombreParada",
 				"type": "varchar"
 			},
 			{
-				"name": "CapacidadEfectiva",
+				"name": "Zona",
+				"type": "varchar"
+			},
+			{
+				"name": "Latitud",
+				"type": "varchar"
+			},
+			{
+				"name": "Longitud",
 				"type": "varchar"
 			},
 			{

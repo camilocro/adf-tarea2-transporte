@@ -29,18 +29,15 @@
 			},
 			{
 				"name": "HoraProgramada",
-				"type": "time",
-				"scale": 7
+				"type": "nvarchar"
 			},
 			{
 				"name": "HoraSalida",
-				"type": "time",
-				"scale": 7
+				"type": "nvarchar"
 			},
 			{
 				"name": "HoraLlegada",
-				"type": "time",
-				"scale": 7
+				"type": "nvarchar"
 			},
 			{
 				"name": "ValidacionesTarjeta",
